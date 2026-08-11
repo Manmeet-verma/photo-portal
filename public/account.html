@@ -45,7 +45,7 @@
 <script src="/js/ui.js"></script>
 <script>
   const user = currentUser();
-  if (!user) { location.href = '/login.html'; }
+  if (!user) { location.href = '/login'; }
   else if (user.role === 'admin') { location.href = '/admin.html'; }
   else {
     document.getElementById('side-avatar').textContent = initials(user.name);
@@ -71,12 +71,12 @@
           ${events.map((e, i) => `
             <div class="gallery-card" onclick="location.href='/s/${e.code}'" style="animation-delay:${i * 0.08}s">
               <div class="gallery-cover">
-                ${e.cover ? `<img src="/api/photo/${e.cover.id}" loading="lazy" alt="">` : '<div class="empty">🖼️</div>'}
+                ${e.cover ? `<img src="${e.cover}" loading="lazy" alt="">` : '<div class="empty">🖼️</div>'}
                 <span class="count-badge">📸 ${e.photoCount}</span>
               </div>
               <div class="gallery-body">
                 <h3>${esc(e.title)}</h3>
-                <div class="meta"><span>${esc(e.admin)}</span><span class="dot"></span><span>${fmtDate(e.eventDate || e.createdAt)}</span></div>
+                <div class="meta"><span>${esc(e.adminName || '')}</span><span class="dot"></span><span>${fmtDate(e.eventDate || e.createdAt)}</span></div>
               </div>
             </div>`).join('')}
         </div>`;

@@ -26,7 +26,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ cod
       return {
         id: d.id,
         name: p.name || "",
-        src: p.driveFileId ? `/api/drive/media/${p.driveFileId}` : p.url || "",
+        src: p.url ? p.url : `/api/photo/${d.id}`,
       };
     }).filter((p) => p.src);
 

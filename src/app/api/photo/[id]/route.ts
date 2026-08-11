@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { driveConfigured, driveMediaBytes } from "@/lib/drive";
+import { getConnection, presignUrl } from "@/lib/s3";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +10,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const snap = await getAdminDb().collection("photos").doc(id).get();
     if (!snap.exists) return NextResponse.json({ error: "Photo not found" }, { status: 404 });
-    const p = snap.data() as { url?: string; driveFileId?: string; driveName?: string; name?: string };
+    const p = snap.data() as { url?: string; driveFileId?: string; s3Key?: string; s3Uid?: string; name?: string };
 
+    if (p.s3Key) {
+      const conn = await getConnection(p.s3Uid || undefined);
+      if (!conn) return NextResponse.json({ error: "S3 connection for this photo is no longer available." }, { status: 503 });
+      return NextResponse.redirect(await presignUrl(conn, p.s3Key));
+    }
     if (p.url) {
       return NextResponse.redirect(p.url);
     }

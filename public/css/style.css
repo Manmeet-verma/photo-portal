@@ -515,6 +515,7 @@ h1, h2, h3 { line-height: 1.15; font-weight: 800; letter-spacing: -.02em; }
   background: radial-gradient(900px 500px at 50% -10%, rgba(79,139,255,.25), transparent 60%), var(--ink);
   animation: flash-in .5s var(--ease) both;
 }
+.auth-flash[hidden] { display: none; }
 @keyframes flash-in { from { opacity: 0; } }
 .auth-flash-inner { text-align: center; color: #fff; animation: fade-up .6s var(--ease) .1s both; }
 .auth-flash-icon {

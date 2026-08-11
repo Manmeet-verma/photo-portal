@@ -9,7 +9,7 @@
   document.getElementById('side-avatar').textContent = initials(user.name);
   document.getElementById('side-name').textContent = user.name;
 
-  const TITLES = { overview: 'Overview', galleries: 'Galleries', team: 'Team & clients', drive: 'Google Drive' };
+  const TITLES = { overview: 'Overview', galleries: 'Galleries', team: 'Team & clients', drive: 'S3 bucket' };
   const viewEls = {
     overview: document.getElementById('view-overview'),
     galleries: document.getElementById('view-galleries'),
@@ -95,7 +95,7 @@
       wrap.innerHTML = `
         <div class="empty-state"><div class="big">🖼️</div>
           <h3>No galleries yet</h3>
-          <p>Create your first gallery, upload photos or pull them from Google Drive,<br>then share the auto-generated link with your client.</p>
+          <p>Create your first gallery, upload photos or pull them from your S3 bucket,<br>then share the auto-generated link with your client.</p>
           <br><button class="btn btn-primary" onclick="LL.createGallery()">+ Create your first gallery</button>
         </div>`;
     }
@@ -128,7 +128,7 @@
           const btn = e.target.querySelector('button[type=submit]');
           btn.disabled = true;
           try {
-            await API.post('/events', {
+            const res = await API.post('/events', {
               title: modal.querySelector('#ev-title').value.trim(),
               description: modal.querySelector('#ev-desc').value.trim(),
               eventDate: modal.querySelector('#ev-date').value || null,
@@ -138,6 +138,7 @@
             close();
             await loadEvents();
             renderGalleries();
+            LL.openEvent(res.event && res.event.id, true);
           } catch (err) { toast(err.message, 'error'); btn.disabled = false; }
         });
       } });
@@ -165,7 +166,7 @@
   };
 
   /* ---------------- open gallery detail ---------------- */
-  LL.openEvent = async (id) => {
+  LL.openEvent = async (id, autoPickS3 = false) => {
     let item;
     try { item = (await API.get(`/events/${id}`)).item; }
     catch (e) { toast(e.message, 'error'); return; }
@@ -187,7 +188,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <button class="btn btn-primary btn-sm" id="btn-share">🔗 Share link</button>
-            <button class="btn btn-ghost btn-sm" id="btn-drive">☁️ From Google Drive</button>
+            <button class="btn btn-ghost btn-sm" id="btn-drive">☁️ From S3 bucket</button>
             <button class="btn btn-danger btn-sm" id="btn-delete-sel" style="display:none">🗑 Delete selected (<span id="sel-count">0</span>)</button>
           </div>
           <span class="chip" id="photo-count">${item.photoCount} photos</span>
@@ -208,7 +209,7 @@
               <span class="tile-check">✓</span>
               <button class="icon-btn tile-remove" title="Remove photo">✕</button>
             </div>`).join('') ||
-            '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:26px">No photos yet — drop images above or import from Google Drive.</p>';
+            '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:26px">No photos yet — drop images above or import from S3.</p>';
           countChip.textContent = `${item.photos.length} photos`;
         }
 
@@ -262,6 +263,8 @@
           const openDriveBtn = document.getElementById('btn-drive');
           openDriveBtn.addEventListener('click', () => openDrivePicker(item));
         }
+
+        if (autoPickS3) openDrivePicker(item);
 
         /* upload */
         const dz = document.getElementById('dz-drop');
@@ -328,21 +331,21 @@
       </div>`);
   }
 
-  /* ---------------- drive picker ---------------- */
+  /* ---------------- S3 picker ---------------- */
   async function openDrivePicker(item) {
     let pageToken = '';
-    let driveFiles = [];
+    let s3Files = [];
     const selectedFiles = new Set();
 
     const back = openModal(`
       <div class="modal-head">
-        <h3>Pick photos from Google Drive</h3>
+        <h3>Pick photos from S3 bucket</h3>
         <button class="modal-close" onclick="closeModal(this.closest('.modal-back'))">✕</button>
       </div>
       <div class="modal-body">
         <div class="drive-toolbar">
-          <input class="input" id="dv-search" placeholder="Search by name…" style="flex:1;min-width:190px">
-          <button class="btn btn-ghost btn-sm" id="dv-search-btn">Search</button>
+          <input class="input" id="dv-search" placeholder="Folder name / prefix…" style="flex:1;min-width:190px">
+          <button class="btn btn-ghost btn-sm" id="dv-search-btn">Browse</button>
         </div>
         <div class="drive-grid" id="dv-grid">${skeleton(140)}</div>
         <div class="divider"></div>
@@ -360,45 +363,45 @@
     const importBtn = back.querySelector('#dv-import');
     const loadMoreBtn = back.querySelector('#dv-more');
 
-    async function load(query = '', append = false) {
+    async function load(prefix = '', append = false) {
       const params = new URLSearchParams();
-      if (query) params.set('q', query);
-      if (pageToken) params.set('pageToken', pageToken);
+      if (prefix) params.set('prefix', prefix);
+      if (pageToken) params.set('token', pageToken);
       if (!append) {
         grid.innerHTML = Array(6).fill(skeleton(140)).join('');
-        driveFiles = [];
+        s3Files = [];
       }
       try {
-        const data = await API.get(`/drive/files?${params}`);
-        driveFiles.push(...data.files);
-        pageToken = data.nextPageToken || '';
-        moreBtnBtn.style.display = pageToken ? '' : 'none';
+        const data = await API.get(`/s3/files?${params}`);
+        s3Files.push(...data.files);
+        pageToken = data.nextToken || '';
+        loadMoreBtn.style.display = pageToken ? '' : 'none';
         renderGrid();
       } catch (e) {
         grid.innerHTML = `
           <div class="empty-state" style="grid-column:1/-1;padding:30px">
             <h3>${esc(e.message)}</h3>
-            <p style="margin-top:6px">Connect your Google account in the Drive settings tab.</p>
-            <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="LL.switchView('drive')">Open Drive settings</button>
+            <p style="margin-top:6px">Add your AWS keys in the S3 settings tab and restart the server.</p>
+            <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="LL.switchView('drive')">Open S3 settings</button>
           </div>`;
       }
     }
 
     function renderGrid() {
-      grid.innerHTML = driveFiles.map((f) => `
-        <div class="drive-tile" data-id="${f.id}" title="${esc(f.name)}">
-          ${f.thumbnail ? `<img src="${esc(f.thumbnail)}" loading="lazy" alt="">` : `<div style="width:100%;height:100%;display:grid;place-items:center;color:var(--muted)">🖼</div>`}
+      grid.innerHTML = s3Files.map((f) => `
+        <div class="drive-tile" data-id="${f.key}" title="${esc(f.name)}">
+          ${f.url ? `<img src="${esc(f.url)}" loading="lazy" alt="">` : `<div style="width:100%;height:100%;display:grid;place-items:center;color:var(--muted)">🖼</div>`}
           <span class="tile-check">✓</span>
-        </div>`).join('') || '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:24px">No images found in Drive.</p>';
+        </div>`).join('') || '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:24px">No images found in this bucket.</p>';
     }
 
     grid.addEventListener('click', (e) => {
       const tile = e.target.closest('.drive-tile');
       if (!tile) return;
-      const id = tile.dataset.id;
-      if (selectedFiles.has(id)) selectedFiles.delete(id);
-      else selectedFiles.add(id);
-      tile.classList.toggle('selected', selectedFiles.has(id));
+      const key = tile.dataset.id;
+      if (selectedFiles.has(key)) selectedFiles.delete(key);
+      else selectedFiles.add(key);
+      tile.classList.toggle('selected', selectedFiles.has(key));
       countChip.textContent = `${selectedFiles.size} selected`;
       importBtn.disabled = !selectedFiles.size;
     });
@@ -414,10 +417,10 @@
 
     importBtn.addEventListener('click', async () => {
       if (!selectedFiles.size) return;
-      const selected = driveFiles.filter((f) => selectedFiles.has(f.id));
+      const keys = [...selectedFiles];
       try {
-        await API.post(`/events/${item.id}/drive`, { files: selected });
-        toast(`${selected.length} photo${selected.length > 1 ? 's' : ''} imported from Drive`, 'success');
+        await API.post(`/events/${item.id}/s3`, { keys });
+        toast(`${keys.length} photo${keys.length > 1 ? 's' : ''} imported from S3`, 'success');
         closeModal(back);
         LL.openEvent(item.id);
       } catch (e) { toast(e.message, 'error'); }
@@ -521,32 +524,45 @@
     } catch (e) { toast(e.message, 'error'); }
   };
 
-  /* ============================== DRIVE ============================== */
+  /* ============================== S3 BUCKET ============================== */
   function loadDriveSettings() {
     const wrap = viewEls.drive;
     wrap.innerHTML = `<div class="panel panel-pad" style="max-width:760px">${skeleton(200)}</div>`;
     (async () => {
       try {
-        const s = await API.get('/drive/status');
+        const s = await API.get('/s3/status');
         if (!s.configured) {
           wrap.innerHTML = driveSetupCard();
-        } else if (!s.connected) {
-          wrap.innerHTML = `
-            <div class="panel panel-pad anim-fade-up" style="max-width:760px">
-              <h3 style="font-size:20px;margin-bottom:10px">Connect Google Drive</h3>
-              <p style="color:var(--muted);margin-bottom:22px">Sign in with Google to browse your Drive folders and import photos into galleries — no download needed.</p>
-              <a class="btn btn-primary" href="/api/drive/authurl">☁️ Continue with Google</a>
-            </div>`;
+          wrap.querySelector('#s3-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type=submit]');
+            btn.disabled = true;
+            btn.textContent = 'Connecting…';
+            try {
+              const r = await API.post('/s3/connect', {
+                accessKeyId: wrap.querySelector('#s3-key').value.trim(),
+                secretAccessKey: wrap.querySelector('#s3-secret').value.trim(),
+                region: wrap.querySelector('#s3-region').value.trim() || 'ap-south-1',
+                bucket: wrap.querySelector('#s3-bucket').value.trim(),
+              });
+              toast(`Connected to ${r.bucket}`, 'success');
+              loadDriveSettings();
+            } catch (err) {
+              toast(err.message, 'error');
+              btn.disabled = false;
+              btn.textContent = 'Connect bucket →';
+            }
+          });
         } else {
           wrap.innerHTML = `
             <div class="panel panel-pad anim-fade-up" style="max-width:760px">
               <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
                 <div style="width:52px;height:52px;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:22px">✓</div>
                 <div style="flex:1">
-                  <h3 style="font-size:19px">Connected to ${esc(s.email)}</h3>
-                  <p style="color:var(--muted);font-size:14px">You can now import photos from Drive inside any gallery (☁️ button).</p>
+                  <h3 style="font-size:19px">Connected to ${esc(s.bucket)}</h3>
+                  <p style="color:var(--muted);font-size:14px">Images in this bucket can be imported into any gallery (☁️ button). Region: ${esc(s.region)}</p>
                 </div>
-                <button class="btn btn-danger btn-sm" onclick="LL.disconnectDrive()">Disconnect</button>
+                <button class="btn btn-danger btn-sm" onclick="LL.disconnectS3()">Disconnect</button>
               </div>
             </div>`;
         }
@@ -559,27 +575,29 @@
   function driveSetupCard() {
     return `
     <div class="panel panel-pad anim-fade-up" style="max-width:760px">
-      <span class="eyebrow">One-time setup</span>
-      <h3 style="font-size:22px;margin:14px 0 8px">Enable Google Drive import</h3>
-      <p style="color:var(--muted);margin-bottom:20px">To let photographers pull photos straight from Google Drive, create free OAuth credentials — it takes about 5 minutes:</p>
+      <span class="eyebrow">Amazon S3</span>
+      <h3 style="font-size:22px;margin:14px 0 8px">Connect your S3 bucket</h3>
+      <p style="color:var(--muted);margin-bottom:20px">Upload your photos to an S3 bucket once, then connect it here. All images in the bucket become available for galleries:</p>
       <ol style="margin-left:20px;line-height:2.1;color:var(--ink-soft)">
-        <li>Open <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> and create a project.</li>
-        <li>Go to <b>APIs &amp; Services → Library</b> and enable <b>Google Drive API</b>.</li>
-        <li>Go to <b>APIs &amp; Services → Credentials</b> → <b>Create credentials → OAuth client ID</b>.</li>
-        <li>Application type: <b>Web application</b>. Add this redirect URI:<br>
-          <code style="display:inline-block;background:var(--mist-2);padding:4px 10px;border-radius:8px;margin:4px 0">${location.origin}/api/drive/callback</code></li>
-        <li>Copy the <b>Client ID</b> and <b>Client secret</b> into a file named <code>.env</code> in the project folder:</li>
+        <li>Create a bucket in <a href="https://console.aws.amazon.com/s3" target="_blank">AWS S3</a> and upload your photos (drag-drop a folder works).</li>
+        <li>Create an IAM user with <b>AmazonS3ReadOnlyAccess</b> in <a href="https://console.aws.amazon.com/iam" target="_blank">IAM → Users → Create user</a> → Security credentials → <b>Create access key</b>.</li>
+        <li>Enter the details below and click connect — no code, no .env changes.</li>
       </ol>
-      <pre style="background:var(--ink);color:#cbd5e1;border-radius:12px;padding:16px;font-size:13px;overflow-x:auto;margin:6px 0 22px">GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=xxxx</pre>
-      <p style="font-size:13.5px;color:var(--muted)">Then restart the server (<code>npm start</code>) and come back to this page. Until then, you can still upload photos from your computer.</p>
+      <form id="s3-form" style="margin-top:18px">
+        <div class="field"><label>Bucket name</label><input class="input" id="s3-bucket" required placeholder="e.g. my-photo-bucket"></div>
+        <div class="field"><label>AWS region</label><input class="input" id="s3-region" placeholder="ap-south-1 (Mumbai) — default"></div>
+        <div class="field"><label>Access key ID</label><input class="input" id="s3-key" required placeholder="AKIA..."></div>
+        <div class="field"><label>Secret access key</label><input class="input" id="s3-secret" type="password" required placeholder="••••••••••••"></div>
+        <button class="btn btn-primary" style="width:100%" type="submit">Connect bucket →</button>
+      </form>
     </div>`;
   }
 
-  LL.disconnectDrive = async () => {
+  LL.disconnectS3 = async () => {
+    if (!confirm('Disconnect this S3 bucket? Imported photos in galleries will stop loading.')) return;
     try {
-      await API.post('/drive/disconnect');
-      toast('Drive disconnected', 'success');
+      await API.post('/s3/disconnect');
+      toast('S3 bucket disconnected', 'success');
       loadDriveSettings();
     } catch (e) { toast(e.message, 'error'); }
   };

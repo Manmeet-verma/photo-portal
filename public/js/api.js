@@ -13,7 +13,7 @@ const API = {
       if (r.status === 401 && !path.includes('/auth/')) {
         localStorage.removeItem('ll_token');
         localStorage.removeItem('ll_user');
-        location.href = '/login.html';
+        location.href = '/login';
       }
       const err = new Error((data && data.error) || `Request failed (${r.status})`);
       err.status = r.status;

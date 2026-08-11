@@ -89,6 +89,8 @@ export type FirePhotoDoc = {
   url?: string;
   driveFileId?: string;
   driveName?: string;
+  s3Key?: string;
+  s3Uid?: string;
   createdAt: Timestamp;
 };
 
