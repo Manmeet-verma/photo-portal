@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { id } = await params;
     if (!(await getEvent(id))) return NextResponse.json({ error: "Gallery not found" }, { status: 404 });
     const body = await req.json().catch(() => ({}));
-    const keys: string[] = Array.isArray(body.keys) ? body.keys.filter((k) => typeof k === "string" && k) : [];
+    const keys: string[] = Array.isArray(body.keys) ? body.keys.filter((k: unknown) => typeof k === "string" && k) : [];
     if (!keys.length) return NextResponse.json({ error: "No files selected" }, { status: 400 });
 
     const photoIds: string[] = [];

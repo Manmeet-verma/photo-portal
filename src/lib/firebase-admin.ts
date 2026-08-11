@@ -15,7 +15,7 @@ type ServiceAccount = { clientEmail?: string; privateKey?: string };
 let _sa: ServiceAccount | null | undefined;
 
 function loadServiceAccount(): ServiceAccount {
-  if (_sa !== undefined) return _sa;
+  if (_sa !== undefined) return _sa || { clientEmail: "", privateKey: "" };
   try {
     const p = join(process.cwd(), "service-account.json");
     if (existsSync(p)) {
