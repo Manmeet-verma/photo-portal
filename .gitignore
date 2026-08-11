@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next
+/out
+next-env.d.ts
+
+# env & secrets
+.env
+.env.local
+.env*.local
+service-account.json
+*.pem
+*.key
+
+# logs
+*.log
+dev-server.log
+
+# misc
+.DS_Store
+Thumbs.db

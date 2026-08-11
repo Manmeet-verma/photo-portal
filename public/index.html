@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LensLink — Photo Delivery for Professional Photographers</title>
+<meta name="description" content="Upload galleries, pull photos from Google Drive, auto-generate a smart share link and deliver selected moments to your clients. Professional photo delivery platform.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232457f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='white' stroke-width='9'/%3E%3Ccircle cx='50' cy='50' r='9' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="/index.html">
+      <span class="brand-mark">◎</span>
+      <span>LensLink</span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#showcase">Studios</a>
+      <a href="#stories">Stories</a>
+      <div class="nav-cta" id="navbar-root"></div>
+    </div>
+    <button class="nav-burger" id="nav-burger" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow anim-fade-up">AI-powered delivery for photographers</span>
+      <h1 class="anim-fade-up" style="animation-delay:.08s">Every shoot, delivered with a <span class="accent">single link.</span></h1>
+      <p class="anim-fade-up" style="animation-delay:.16s">Upload full shoots or pull images straight from Google Drive, select your favourites, and LensLink instantly generates a beautiful share link — clients open it and see exactly the photos you picked.</p>
+      <div class="hero-cta anim-fade-up" style="animation-delay:.24s">
+        <a href="/login.html?tab=register" class="btn btn-primary btn-lg">Start free — no card needed</a>
+        <a href="#how" class="btn btn-ghost btn-lg">See how it works</a>
+      </div>
+      <div class="hero-trust anim-fade-up" style="animation-delay:.32s">
+        <div class="trust-item"><b><span class="count" data-count="200">0</span>K+</b><span>Happy clients</span></div>
+        <div class="trust-item"><b><span class="count" data-count="95">0</span>%</b><span>Faster delivery</span></div>
+        <div class="trust-item"><b><span class="count" data-count="40">0</span>M+</b><span>Photos delivered</span></div>
+      </div>
+    </div>
+    <div class="montage anim-pop" style="animation-delay:.2s">
+      <div class="ring"></div>
+      <div class="card m1"><img src="/assets/demo/wedding-1.jpg" alt="Wedding photography"></div>
+      <div class="card m2"><img src="/assets/demo/event-1.jpg" alt="Event photography"></div>
+      <div class="card m3"><img src="/assets/demo/portrait-1.jpg" alt="Portrait photography"></div>
+      <div class="sticker s1"><span class="ico">🔗</span><span>Share link generated</span></div>
+      <div class="sticker s2"><span class="ico">🖼️</span><span>248 photos selected</span></div>
+      <div class="sticker s3"><span class="ico">☁️</span><span>Imported from Drive</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" style="--dur:26s">
+    <span>✸ Wedding Studios</span><span>✦ Corporate Events</span><span>✸ Fashion Shoots</span><span>✦ Sports Days</span><span>✸ School Photos</span><span>✦ Music Festivals</span><span>✸ Family Sessions</span>
+    <span>✸ Wedding Studios</span><span>✦ Corporate Events</span><span>✸ Fashion Shoots</span><span>✦ Sports Days</span><span>✸ School Photos</span><span>✦ Music Festivals</span><span>✸ Family Sessions</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>From camera to client in minutes</h2>
+      <p>Four steps. No downloads, no USB drives, no burning CDs. Just elegant, instant delivery.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal reveal-delay-1">
+        <span class="arrow">→</span>
+        <h3>Create a gallery</h3>
+        <p>Name the shoot, pick the event date and invite your client's email. LensLink creates the gallery instantly.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <span class="arrow">→</span>
+        <h3>Drop photos or pick from Drive</h3>
+        <p>Drag & drop hundreds of images, or browse Google Drive and multi-select the ones you want.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <span class="arrow">→</span>
+        <h3>Auto share link</h3>
+        <p>Every gallery gets a private, elegant link. Copy, WhatsApp or email it with one tap.</p>
+      </div>
+      <div class="step reveal reveal-delay-4">
+        <span class="arrow">→</span>
+        <h3>Client views & downloads</h3>
+        <p>Your client opens the link and browses exactly the photos you selected — in a stunning gallery.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features" style="padding-top:0">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Features</span>
+      <h2>Everything you need to deliver like a pro</h2>
+      <p>Built for the way photographers actually work.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-ico">📂</div>
+        <h3>Google Drive import</h3>
+        <p>Connect your Google account and pull photos straight from Drive. Browse, multi-select and import in seconds.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-ico">🔗</div>
+        <h3>Instant share links</h3>
+        <p>Every gallery gets a unique private link. Images are streamed through your studio's own server — no Drive links leaking.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-ico">👥</div>
+        <h3>Team & client accounts</h3>
+        <p>Create photographer accounts for your team and customer accounts for your clients. Everyone sees only their galleries.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-ico">🖼️</div>
+        <h3>Curated selection</h3>
+        <p>Select exactly the photos your client should see — no need to share an entire shoot dump.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-ico">💬</div>
+        <h3>WhatsApp-ready sharing</h3>
+        <p>One-click share to WhatsApp or email with auto-filled messages. Your client gets the link in seconds.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-ico">⚡</div>
+        <h3>Fast, modern gallery</h3>
+        <p>Smooth openers, keyboard-navigable lightbox and full-resolution downloads on any device.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE / DARK BAND -->
+<section class="band-dark section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Designed for studios</span>
+      <h2>White-branded delivery your clients will love</h2>
+      <p>Your name on every gallery, your studio in front of every client.</p>
+    </div>
+    <div class="showcase">
+      <div class="show-card reveal reveal-delay-1">
+        <div class="ico">💍</div>
+        <h3>Weddings</h3>
+        <p>Pick the dream shots from thousands of frames, deliver the album link same evening.</p>
+      </div>
+      <div class="show-card reveal reveal-delay-2">
+        <div class="ico">🏁</div>
+        <h3>Sports & events</h3>
+        <p>Upload from the field, curate between heats, and let parents grab highlight photos instantly.</p>
+      </div>
+      <div class="show-card reveal reveal-delay-3">
+        <div class="ico">🎓</div>
+        <h3>Schools & enterprises</h3>
+        <p>Publish galleries per class or department and share one neat link per group.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="stories">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Client stories</span>
+      <h2>Photographers trust LensLink</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi reveal reveal-delay-1">
+        <div class="stars">★★★★★</div>
+        <p class="quote">“I shoot 2,000 images a wedding and previously sent links via five different tools. Now everything goes through one portal — the Drive import alone saves me an hour per shoot.”</p>
+        <div class="who"><span class="avatar">PS</span><div><b>Priya Sharma</b><span>Wedding photographer · Mumbai</span></div></div>
+      </div>
+      <div class="testi reveal reveal-delay-2">
+        <div class="stars">★★★★★</div>
+        <p class="quote">“My clients constantly ask 'can I see the photos?'. I just send the LensLink link — the gallery looks premium and my brand is on every image.”</p>
+        <div class="who"><span class="avatar">JT</span><div><b>James Taylor</b><span>Corporate events · London</span></div></div>
+      </div>
+      <div class="testi reveal reveal-delay-1">
+        <div class="stars">★★★★★</div>
+        <p class="quote">“Selecting photos for each couple used to take me a whole evening. Now I multi-select from Drive in minutes and they get served the curated set instantly.”</p>
+        <div class="who"><span class="avatar">AR</span><div><b>Aarav Rao</b><span>Portrait studio · Bengaluru</span></div></div>
+      </div>
+      <div class="testi reveal reveal-delay-2">
+        <div class="stars">★★★★★</div>
+        <p class="quote">“Our school photo days print thousands of sharing links. LensLink handles 40+ galleries and parents never get confused about which link is theirs.”</p>
+        <div class="who"><span class="avatar">EW</span><div><b>Emily Watts</b><span>School photography · Sydney</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section" id="cta" style="padding-top:0">
+  <div class="container">
+    <div class="cta-band reveal reveal-zoom">
+      <h2>Ready to deliver like a pro?</h2>
+      <p>Create your photographer account, upload or import from Drive, and get your first share link in under a minute.</p>
+      <a href="/login.html?tab=register" class="btn btn-white btn-lg">Create my studio account →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/"><span class="brand-mark">◎</span><span>LensLink</span></a>
+        <p class="about">Smart photo delivery for professional photographers — upload, import from Google Drive, and share curated galleries with a single link.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#cta">Pricing</a>
+        <a href="/login.html">Sign in</a>
+      </div>
+      <div>
+        <h4>Studios</h4>
+        <a href="#features">Weddings</a>
+        <a href="#features">Events</a>
+        <a href="#features">Schools</a>
+        <a href="#features">Sports</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#stories">Stories</a>
+        <a href="#cta">Careers</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> LensLink — All rights reserved.</span>
+      <span>Made for photographers, everywhere. ☁︎</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/api.js"></script>
+<script src="/js/ui.js"></script>
+<script>
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 30));
+  const links = document.getElementById('nav-links');
+  document.getElementById('nav-burger').onclick = () => links.classList.toggle('open');
+  links.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => links.classList.remove('open')));
+  document.getElementById('year').textContent = new Date().getFullYear();
+  ensureNav();
+  initReveal();
+</script>
+</body>
+</html>

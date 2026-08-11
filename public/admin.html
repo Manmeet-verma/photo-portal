@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Dashboard · LensLink</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232457f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='white' stroke-width='9'/%3E%3Ccircle cx='50' cy='50' r='9' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="app-side" id="app-side">
+    <a class="brand" href="/index.html"><span class="brand-mark">◎</span><span>LensLink</span></a>
+    <div class="side-label">Workspace</div>
+    <button class="side-link active" data-view="overview"><span class="ico">📊</span>Overview</button>
+    <button class="side-link" data-view="galleries"><span class="ico">🖼️</span>Galleries</button>
+    <button class="side-link" data-view="team"><span class="ico">👥</span>Team &amp; clients</button>
+    <button class="side-link" data-view="drive"><span class="ico">☁️</span>Google Drive</button>
+    <div class="side-label">Site pages</div>
+    <a class="side-link" href="/"><span class="ico">🏠</span>Home</a>
+    <a class="side-link" href="/account.html"><span class="ico">🖼️</span>Customer portal</a>
+    <a class="side-link" href="/login"><span class="ico">🔐</span>Login</a>
+    <a class="side-link" href="/s/EXAMPLEGALLERY"><span class="ico">📤</span>Gallery view</a>
+    <div class="side-user">
+      <span class="avatar" id="side-avatar"></span>
+      <div class="meta"><b id="side-name"></b><span>Photographer</span></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="crumb" id="crumb">Workspace</div>
+        <h1 id="page-title">Overview</h1>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="app-burger" id="app-burger" style="border:0;background:none;font-size:22px">☰</button>
+        <a class="btn btn-ghost btn-sm" href="/index.html">View site</a>
+        <button class="btn btn-dark btn-sm" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+
+    <div id="view-overview" class="view"></div>
+    <div id="view-galleries" class="view" style="display:none"></div>
+    <div id="view-team" class="view" style="display:none"></div>
+    <div id="view-drive" class="view" style="display:none"></div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

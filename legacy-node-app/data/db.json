@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Studio Admin",
+      "email": "admin@lenslink.app",
+      "passwordHash": "$2a$10$LPcZ94HbO7mDzr5zggKbYuUa6n4RKdiYDpZ4RLOqiuCBP8p922m9m",
+      "role": "admin",
+      "createdAt": "2026-08-09T13:21:24.082Z"
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "adminId": 1,
+      "title": "Crystal Wedding — Preview",
+      "description": "A taste of our favourite moments from the Big Day. Full album coming soon — these are just the first selects.",
+      "eventDate": "2026-08-09",
+      "guestEmails": [],
+      "code": "PMZsesBa8u",
+      "photos": [
+        { "id": 1, "name": "The first dance.jpg", "source": "local", "filename": "1/wedding-1.jpg", "createdAt": "2026-08-09T13:30:00.000Z" },
+        { "id": 2, "name": "Golden hour couple.jpg", "source": "local", "filename": "1/wedding-2.jpg", "createdAt": "2026-08-09T13:30:01.000Z" },
+        { "id": 3, "name": "Vows & rings.jpg", "source": "local", "filename": "1/wedding-3.jpg", "createdAt": "2026-08-09T13:30:02.000Z" },
+        { "id": 4, "name": "Reception lights.jpg", "source": "local", "filename": "1/event-1.jpg", "createdAt": "2026-08-09T13:30:03.000Z" },
+        { "id": 5, "name": "Guests celebrating.jpg", "source": "local", "filename": "1/event-2.jpg", "createdAt": "2026-08-09T13:30:04.000Z" },
+        { "id": 6, "name": "First look.jpg", "source": "local", "filename": "1/portrait-1.jpg", "createdAt": "2026-08-09T13:30:05.000Z" },
+        { "id": 7, "name": "Bride portrait.jpg", "source": "local", "filename": "1/portrait-2.jpg", "createdAt": "2026-08-09T13:30:06.000Z" },
+        { "id": 8, "name": "Groom portrait.jpg", "source": "local", "filename": "1/portrait-3.jpg", "createdAt": "2026-08-09T13:30:07.000Z" },
+        { "id": 9, "name": "Dinner details.jpg", "source": "local", "filename": "1/food-1.jpg", "createdAt": "2026-08-09T13:30:08.000Z" },
+        { "id": 10, "name": "Live band.jpg", "source": "local", "filename": "1/band-1.jpg", "createdAt": "2026-08-09T13:30:09.000Z" },
+        { "id": 11, "name": "Vow renewal outdoors.jpg", "source": "local", "filename": "1/nature-1.jpg", "createdAt": "2026-08-09T13:30:10.000Z" }
+      ],
+      "createdAt": "2026-08-09T13:21:24.083Z"
+    }
+  ],
+  "counters": {
+    "user": 2,
+    "event": 2,
+    "photo": 12
+  }
+}

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in · LensLink</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232457f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='white' stroke-width='9'/%3E%3Ccircle cx='50' cy='50' r='9' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-page">
+  <!-- LEFT: cinematic visual -->
+  <div class="auth-visual">
+    <a class="brand" href="/index.html"><span class="brand-mark">◎</span><span>LensLink</span></a>
+
+    <div class="auth-show">
+      <span class="eyebrow auth-eyebrow">LensLink studio suite</span>
+      <div class="auth-headline">One link. <br><span class="accent-w">Your best frames.</span></div>
+      <div class="auth-sub">Photographers curate from Drive & uploads — clients open the link and see exactly what you picked.</div>
+    </div>
+
+    <!-- floating polaroid cards -->
+    <div class="auth-montage">
+      <div class="auth-card-f card-a"><img src="/assets/demo/wedding-2.jpg" alt=""><span class="tag">💍 1,240 frames</span></div>
+      <div class="auth-card-f card-b"><img src="/assets/demo/portrait-2.jpg" alt=""><span class="tag">✨ Curated</span></div>
+      <div class="auth-card-f card-c"><img src="/assets/demo/nature-1.jpg" alt=""><span class="tag">⭐ 4.9 studio rating</span></div>
+      <div class="mini-chip chip-top">🔗 link.ready → sent to client</div>
+      <div class="mini-chip chip-bot">☁️ imported 214 photos from Drive</div>
+    </div>
+
+    <div class="auth-foot-note">Trusted by 200K+ photographers & event studios · <b>75,000+ studios worldwide</b></div>
+  </div>
+
+  <!-- RIGHT: form panel -->
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="login">Sign in</button>
+        <button class="tab-btn" data-tab="register">Create account</button>
+      </div>
+
+      <div class="form-error" id="error"></div>
+
+      <!-- SIGN IN -->
+      <form id="login-form" class="anim-fade-up">
+        <h2 class="auth-title">Welcome back 👋</h2>
+        <p class="sub">Sign in to your studio or customer account.</p>
+        <div class="field">
+          <label for="li-email">Email address</label>
+          <input class="input" id="li-email" type="email" placeholder="you@studio.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="li-pass">Password</label>
+          <input class="input" id="li-pass" type="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="li-btn">
+          <span class="btn-label">Sign in →</span>
+          <span class="btn-spinner"></span>
+        </button>
+        <p class="form-hint hint-center">Demo photographer account: <code>admin@lenslink.app / admin123</code></p>
+      </form>
+
+      <!-- REGISTER -->
+      <form id="register-form" hidden>
+        <h2 class="auth-title">Create account 🎉</h2>
+        <p class="sub">New here? Join LensLink in seconds — it's free to start.</p>
+        <div class="field">
+          <label for="rg-name">Full name</label>
+          <input class="input" id="rg-name" type="text" placeholder="Alex Carter" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="rg-email">Email address</label>
+          <input class="input" id="rg-email" type="email" placeholder="you@mail.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="rg-pass">Password</label>
+          <input class="input" id="rg-pass" type="password" placeholder="At least 6 characters" autocomplete="new-password" required minlength="6">
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="rg-btn">
+          <span class="btn-label">Create account →</span>
+          <span class="btn-spinner"></span>
+        </button>
+      </form>
+
+      <div class="auth-foot">
+        <a href="/index.html">← Back to home</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- full-screen success flash before redirect -->
+<div class="auth-flash" id="auth-flash" hidden>
+  <div class="auth-flash-inner">
+    <div class="auth-flash-icon">✓</div>
+    <h3 id="flash-msg">Signed in!</h3>
+    <p id="flash-sub">Taking you to your workspace…</p>
+    <div class="auth-flash-bar"><span></span></div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/ui.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  let tab = params.get('tab') === 'register' ? 'register' : 'login';
+
+  /* ---------- element references (fixed) ---------- */
+  const liForm = document.getElementById('login-form');
+  const rgForm = document.getElementById('register-form');
+  const errBox = document.getElementById('error');
+  const liBtn = document.getElementById('li-btn');
+  const rgBtn = document.getElementById('rg-btn');
+  const liEmail = document.getElementById('li-email');
+  const liPass = document.getElementById('li-pass');
+  const rgName = document.getElementById('rg-name');
+  const rgEmail = document.getElementById('rg-email');
+  const rgPass = document.getElementById('rg-pass');
+  const flash = document.getElementById('auth-flash');
+
+  /* ---------- helpers ---------- */
+  function showErr(msg) { errBox.textContent = msg; errBox.classList.add('show'); }
+  function clearErr() { errBox.classList.remove('show'); }
+
+  function setLoading(btn, loading) {
+    btn.disabled = loading;
+    btn.classList.toggle('loading', loading);
+  }
+
+  function activate(t) {
+    tab = t;
+    document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === t));
+    liForm.style.display = t === 'login' ? '' : 'none';
+    rgForm.style.display = t === 'register' ? '' : 'none';
+    clearErr();
+    if (t === 'login') liForm.classList.remove('no-anim'), void liForm.offsetWidth, liForm.classList.add('anim-fade-up');
+    if (t === 'register') rgForm.classList.remove('no-anim'), void rgForm.offsetWidth, rgForm.classList.add('anim-fade-up');
+  }
+  document.querySelectorAll('.tab-btn').forEach((b) => b.addEventListener('click', () => activate(b.dataset.tab)));
+  activate(tab);
+
+  if (currentUser()) {
+    location.href = currentUser().role === 'admin' ? '/admin.html' : '/account.html';
+  }
+
+  /* ---------- success flash + redirect ---------- */
+  function celebrateAndRedirect(user, reg) {
+    flash.hidden = false;
+    document.getElementById('flash-msg').textContent = reg ? 'Account created!' : 'Signed in!';
+    document.getElementById('flash-sub').textContent = `Taking you to your ${user.role === 'admin' ? 'studio' : 'gallery'} space…`;
+    document.body.classList.add('no-scroll');
+    setTimeout(() => {
+      location.href = user.role === 'admin' ? '/admin.html' : '/account.html';
+    }, 1400);
+  }
+
+  /* ---------- handlers (fixed) ---------- */
+  liForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); clearErr();
+    const email = liEmail.value.trim();
+    const pass = liPass.value;
+    if (!email || !pass) { showErr('Please fill in both email and password.'); return; }
+    setLoading(liBtn, true);
+    try {
+      const data = await API.post('/auth/login', { email, password: pass });
+      setAuth(data.token, data.user);
+      celebrateAndRedirect(data.user, false);
+    } catch (err) { showErr(err.message); setLoading(liBtn, false); }
+  });
+
+  rgForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); clearErr();
+    const name = rgName.value.trim();
+    const email = rgEmail.value.trim();
+    const pass = rgPass.value;
+    if (!name || !email || !pass) { showErr('Please fill in all fields.'); return; }
+    if (pass.length < 6) { showErr('Password must be at least 6 characters.'); return; }
+    setLoading(rgBtn, true);
+    try {
+      const data = await API.post('/auth/register', { name, email, password: pass });
+      setAuth(data.token, data.user);
+      celebrateAndRedirect(data.user, true);
+    } catch (err) { showErr(err.message); setLoading(rgBtn, false); }
+  });
+</script>
+</body>
+</html>

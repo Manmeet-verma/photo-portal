@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Galleries · LensLink</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%232457f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='white' stroke-width='9'/%3E%3Ccircle cx='50' cy='50' r='9' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="app-side">
+    <a class="brand" href="/index.html"><span class="brand-mark">◎</span><span>LensLink</span></a>
+    <div class="side-label">My space</div>
+    <button class="side-link active"><span class="ico">🖼️</span>My galleries</button>
+    <div class="side-label">Site pages</div>
+    <a class="side-link" href="/"><span class="ico">🏠</span>Home</a>
+    <a class="side-link" href="/admin.html"><span class="ico">📊</span>Studio dashboard</a>
+    <a class="side-link" href="/login"><span class="ico">🔐</span>Login</a>
+    <a class="side-link" href="/s/EXAMPLEGALLERY"><span class="ico">📤</span>Gallery view</a>
+    <div class="side-user">
+      <span class="avatar" id="side-avatar"></span>
+      <div class="meta"><b id="side-name"></b><span>Customer</span></div>
+    </div>
+  </aside>
+  <div class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="crumb">My gallery space</div>
+        <h1>My galleries</h1>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="app-burger" id="app-burger" style="border:0;background:none;font-size:22px">☰</button>
+        <a class="btn btn-ghost btn-sm" href="/index.html">View site</a>
+        <button class="btn btn-dark btn-sm" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+    <div id="account-content"></div>
+  </div>
+</div>
+<script src="/js/api.js"></script>
+<script src="/js/ui.js"></script>
+<script>
+  const user = currentUser();
+  if (!user) { location.href = '/login.html'; }
+  else if (user.role === 'admin') { location.href = '/admin.html'; }
+  else {
+    document.getElementById('side-avatar').textContent = initials(user.name);
+    document.getElementById('side-name').textContent = user.name;
+    document.getElementById('app-burger').onclick = () => document.querySelector('.app-side').classList.toggle('open');
+
+    const content = document.getElementById('account-content');
+    content.innerHTML = `<div class="gallery-grid">${skeleton(220).repeat(3)}</div>`;
+    API.get('/account/events').then(({ events }) => {
+      if (!events.length) {
+        content.innerHTML = `
+          <div class="panel empty-state" style="padding:60px 20px">
+            <div class="big">🎉</div>
+            <h3>No galleries yet</h3>
+            <p>When your photographer shares a gallery with <b>${esc(user.email)}</b>,<br>it will appear here — and they'll text you a link too.</p>
+            <br><a class="btn btn-primary" href="/index.html">Explore LensLink</a>
+          </div>`;
+        return;
+      }
+      content.innerHTML = `
+        <p style="color:var(--muted);margin-bottom:22px">${events.length} gallery${events.length > 1 ? 'ies' : 'y'} shared with you</p>
+        <div class="gallery-grid">
+          ${events.map((e, i) => `
+            <div class="gallery-card" onclick="location.href='/s/${e.code}'" style="animation-delay:${i * 0.08}s">
+              <div class="gallery-cover">
+                ${e.cover ? `<img src="/api/photo/${e.cover.id}" loading="lazy" alt="">` : '<div class="empty">🖼️</div>'}
+                <span class="count-badge">📸 ${e.photoCount}</span>
+              </div>
+              <div class="gallery-body">
+                <h3>${esc(e.title)}</h3>
+                <div class="meta"><span>${esc(e.admin)}</span><span class="dot"></span><span>${fmtDate(e.eventDate || e.createdAt)}</span></div>
+              </div>
+            </div>`).join('')}
+        </div>`;
+    }).catch((e) => toast(e.message, 'error'));
+  }
+</script>
+</body>
+</html>
