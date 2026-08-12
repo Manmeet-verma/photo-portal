@@ -8,14 +8,17 @@ const API = {
     else if (body !== undefined) { headers['Content-Type'] = 'application/json'; payload = JSON.stringify(body); }
     const r = await fetch(`/api${path}`, { method, headers, body: payload });
     let data = null;
-    try { data = await r.json(); } catch {}
+    const text = await r.text().catch(() => '');
+    if (text) {
+      try { data = JSON.parse(text); } catch { data = null; }
+    }
     if (!r.ok) {
       if (r.status === 401 && !path.includes('/auth/')) {
         localStorage.removeItem('ll_token');
         localStorage.removeItem('ll_user');
         location.href = '/login';
       }
-      const err = new Error((data && data.error) || `Request failed (${r.status})`);
+      const err = new Error((data && data.error) || (text ? `Request failed (${r.status})` : `Server returned an empty response (${r.status}) — check the server's Firebase Admin setup.`));
       err.status = r.status;
       throw err;
     }

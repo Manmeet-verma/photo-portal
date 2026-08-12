@@ -35,7 +35,10 @@ export async function userFromRequest(req: Request, requireAdmin = false) {
     const user: ApiUser = { uid: decoded.uid, name: doc.name, email: doc.email, role: doc.role, createdAt: doc.createdAt.toDate() };
     if (requireAdmin && user.role !== "admin") return { user: null, error: "Photographer account required" };
     return { user, error: null };
-  } catch {
+  } catch (e: any) {
+    if (e?.message?.includes("Firebase Admin is not configured")) {
+      return { user: null, error: "Server-side Firebase Admin is not configured — add service-account.json (or FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY) on the server and restart it." };
+    }
     return { user: null, error: "Session expired, please sign in again" };
   }
 }

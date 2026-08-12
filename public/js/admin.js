@@ -289,14 +289,15 @@
           xhr.upload.onprogress = (e) => { if (e.lengthComputable) bar.style.width = `${Math.round((e.loaded / e.total) * 100)}%`; };
           xhr.onload = async () => {
             track.classList.remove('show');
-            if (xhr.status === 200) {
-              const data = JSON.parse(xhr.responseText);
+            let data = null;
+            try { data = xhr.responseText ? JSON.parse(xhr.responseText) : null; } catch {}
+            if (xhr.status === 200 && data && Array.isArray(data.photos)) {
               item.photos.push(...data.photos);
               toast(`${data.photos.length} photo${data.photos.length > 1 ? 's' : ''} added`, 'success');
               render();
             } else {
               let msg = 'Upload failed';
-              try { msg = JSON.parse(xhr.responseText).error; } catch {}
+              try { msg = (data && data.error) || 'Upload failed'; } catch {}
               toast(msg, 'error');
             }
           };

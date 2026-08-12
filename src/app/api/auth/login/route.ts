@@ -19,7 +19,16 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, returnSecureToken: true }),
     });
-    const d = await r.json();
+    const text = await r.text();
+    let d: any = {};
+    try {
+      d = text ? JSON.parse(text) : {};
+    } catch {
+      return NextResponse.json(
+        { error: "Sign-in service returned an invalid response — check the server's outbound network access and the NEXT_PUBLIC_FIREBASE_API_KEY value." },
+        { status: 502 }
+      );
+    }
     if (!r.ok) {
       const msg =
         d.error?.message === "INVALID_LOGIN_CREDENTIALS" || d.error?.message === "INVALID_PASSWORD"

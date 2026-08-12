@@ -24,7 +24,13 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: String(email), password: String(password), returnSecureToken: true }),
     });
-    const d = await r.json();
+    const text = await r.text();
+    let d: any = {};
+    try {
+      d = text ? JSON.parse(text) : {};
+    } catch {
+      throw new Error("Sign-in service returned an invalid response — try signing in manually.");
+    }
     if (!r.ok) throw new Error("Account created, but sign-in failed — try signing in manually.");
 
     return NextResponse.json({

@@ -40,15 +40,22 @@ async function req<T = any>(method: string, path: string, body?: unknown): Promi
   }
   const r = await fetch(`/api${path}`, { method, headers, body: payload });
   let data: any = null;
-  try {
-    data = await r.json();
-  } catch {}
+  const text = await r.text().catch(() => "");
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
+  }
   if (!r.ok) {
     if (r.status === 401 && !path.startsWith("/auth/")) {
       clearAuth();
       if (typeof window !== "undefined") window.location.href = "/login";
     }
-    const err: Error & { status?: number } = new Error((data && data.error) || `Request failed (${r.status})`);
+    const err: Error & { status?: number } = new Error(
+      (data && data.error) || (text ? `Request failed (${r.status})` : `Server returned an empty response (${r.status}) — check the server's Firebase Admin setup.`)
+    );
     err.status = r.status;
     throw err;
   }

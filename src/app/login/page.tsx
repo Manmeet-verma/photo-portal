@@ -14,6 +14,19 @@ import { isFirebaseConfigured } from "@/lib/config";
 
 type Tab = "login" | "register";
 
+async function parseJson(res: Response): Promise<any> {
+  const text = await res.text().catch(() => "");
+  if (!text) {
+    if (res.ok) throw new Error("Server returned an empty response — the API server may not be running or its config is incomplete.");
+    return {};
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: `Server returned an invalid response (${res.status}) — check that the server is running the latest build and has its Firebase Admin setup complete.` };
+  }
+}
+
 export default function LoginPage() {
   const [tab, setTab] = useState<Tab>("login");
   const [err, setErr] = useState("");
@@ -24,7 +37,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     fetch("/api/health")
-      .then((r) => r.json())
+      .then((r) => parseJson(r))
       .then((d) => setAdminReady(Boolean(d.adminConfigured)))
       .catch(() => setAdminReady(false));
   }, []);
@@ -38,7 +51,7 @@ export default function LoginPage() {
         const token = await u.getIdToken();
         const res = await fetch("/api/me", { headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
-          const data = await res.json();
+          const data = await parseJson(res);
           window.location.href = data.user.role === "admin" ? "/admin.html" : "/account.html";
         } else {
           auth.signOut();
@@ -69,7 +82,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name: creds.name || "" }),
       });
-      const data = await res.json();
+      const data = await parseJson(res);
       if (!res.ok) {
         if (data.error?.includes("not configured")) {
           setErr("Sign-in works, but the server-side setup is missing: download the service-account key and save it as service-account.json in the project root, then restart the server.");
