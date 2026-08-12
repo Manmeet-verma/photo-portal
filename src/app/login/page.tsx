@@ -18,12 +18,12 @@ async function parseJson(res: Response): Promise<any> {
   const text = await res.text().catch(() => "");
   if (!text) {
     if (res.ok) throw new Error("Server returned an empty response — the API server may not be running or its config is incomplete.");
-    return {};
+    return { error: `Server returned an empty response (HTTP ${res.status}) — the API server is not responding correctly. Check the server logs and that the latest build is deployed.` };
   }
   try {
     return JSON.parse(text);
   } catch {
-    return { error: `Server returned an invalid response (${res.status}) — check that the server is running the latest build and has its Firebase Admin setup complete.` };
+    return { error: `Server returned an invalid response (HTTP ${res.status}) — check that the server is running the latest build and has its Firebase Admin setup complete.` };
   }
 }
 
@@ -84,11 +84,17 @@ export default function LoginPage() {
       });
       const data = await parseJson(res);
       if (!res.ok) {
-        if (data.error?.includes("not configured")) {
+        const msg: string = data.error || `Account setup failed (HTTP ${res.status})`;
+        if (msg.includes("not configured")) {
           setErr("Sign-in works, but the server-side setup is missing: download the service-account key and save it as service-account.json in the project root, then restart the server.");
         } else {
-          throw new Error(data.error || "Account setup failed");
+          setErr(msg);
         }
+        setBusy(false);
+        return;
+      }
+      if (!data || !data.user) {
+        setErr("Server responded without account data — the server is running an old or incompatible build. Redeploy the latest version and restart.");
         setBusy(false);
         return;
       }
