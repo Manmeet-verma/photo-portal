@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isFirebaseConfigured } from "@/lib/config";
-import { getAdminAuth } from "@/lib/firebase-admin";
-import { createUserRecord } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -16,29 +14,31 @@ export async function POST(req: NextRequest) {
     if (!name || !email || !password) return NextResponse.json({ error: "Name, email and password are required." }, { status: 400 });
     if (String(password).length < 6) return NextResponse.json({ error: "Password must be at least 6 characters." }, { status: 400 });
 
-    const created = await getAdminAuth().createUser({ email: String(email), password: String(password), displayName: String(name) });
-    await createUserRecord(created.uid, String(email), String(name), "user");
-
-    const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`, {
+    const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: String(email), password: String(password), returnSecureToken: true }),
+      body: JSON.stringify({ email: String(email), password: String(password), displayName: String(name), returnSecureToken: true }),
     });
     const text = await r.text();
     let d: any = {};
     try {
       d = text ? JSON.parse(text) : {};
     } catch {
-      throw new Error("Sign-in service returned an invalid response — try signing in manually.");
+      return NextResponse.json({ error: "Sign-up service returned an invalid response — try again." }, { status: 502 });
     }
-    if (!r.ok) throw new Error("Account created, but sign-in failed — try signing in manually.");
+    if (!r.ok) {
+      const msg =
+        d.error?.message === "EMAIL_EXISTS"
+          ? "An account with this email already exists."
+          : d.error?.message?.replace(/_/g, " ").toLowerCase() || "Registration failed";
+      return NextResponse.json({ error: msg }, { status: 400 });
+    }
 
     return NextResponse.json({
       token: d.idToken,
-      user: { uid: created.uid, name: String(name), email: String(email), role: "user", createdAt: new Date().toISOString() },
+      user: { uid: d.localId, name: String(name), email: String(email), role: "user", createdAt: new Date().toISOString() },
     });
   } catch (e: any) {
-    const msg = e?.message?.includes("already in use") ? "An account with this email already exists." : e?.message || "Registration failed";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: e?.message || "Registration failed" }, { status: 500 });
   }
 }

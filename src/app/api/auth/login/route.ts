@@ -37,7 +37,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: msg }, { status: 401 });
     }
 
-    const doc = await getUserDoc(d.localId).catch(() => null);
+    let doc = null;
+    try {
+      doc = await getUserDoc(d.localId);
+    } catch {
+      doc = null;
+    }
     return NextResponse.json({
       token: d.idToken,
       user: {
@@ -45,7 +50,7 @@ export async function POST(req: NextRequest) {
         name: doc?.name || d.displayName || email.split("@")[0],
         email,
         role: doc?.role || "user",
-        createdAt: doc?.createdAt ? (doc.createdAt as { toDate?: () => Date }).toDate?.().toISOString() : "",
+        createdAt: doc?.createdAt ? (doc.createdAt as { toDate?: () => Date }).toDate?.().toISOString() : new Date().toISOString(),
       },
     });
   } catch (e: any) {
