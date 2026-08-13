@@ -43,10 +43,13 @@ export async function userFromRequest(req: Request, requireAdmin = false) {
 
     let uid: string;
     let email = "";
+    let adminVerified = false;
+
     try {
       const decoded = await getAdminAuth().verifyIdToken(token);
       uid = decoded.uid;
       email = decoded.email || "";
+      adminVerified = true;
     } catch (adminErr: any) {
       if (adminErr?.message?.includes("Firebase Admin is not configured") || !isFirebaseAdminConfigured()) {
         const payload = decodeJwtPayload(token);
@@ -59,10 +62,25 @@ export async function userFromRequest(req: Request, requireAdmin = false) {
       }
     }
 
-    const doc = await getUserDoc(uid);
-    if (!doc) return { user: null, error: "Account not found" };
-    const user: ApiUser = { uid, name: doc.name, email: doc.email, role: doc.role, createdAt: doc.createdAt.toDate() };
-    if (requireAdmin && user.role !== "admin") return { user: null, error: "Photographer account required" };
+    let doc: FireUserDoc | null = null;
+    try {
+      doc = await getUserDoc(uid);
+    } catch {
+      doc = null;
+    }
+
+    if (doc) {
+      const user: ApiUser = { uid, name: doc.name, email: doc.email, role: doc.role, createdAt: doc.createdAt.toDate() };
+      if (requireAdmin && user.role !== "admin") return { user: null, error: "Photographer account required" };
+      return { user, error: null };
+    }
+
+    if (!adminVerified) {
+      return { user: null, error: "Account not found" };
+    }
+
+    const name = email.split("@")[0] || "User";
+    const user: ApiUser = { uid, name, email, role: "user", createdAt: new Date() };
     return { user, error: null };
   } catch (e: any) {
     if (e?.message?.includes("Firebase Admin is not configured")) {

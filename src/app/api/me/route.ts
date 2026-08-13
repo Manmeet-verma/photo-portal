@@ -7,14 +7,23 @@ export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
   if (!auth.ok) return auth.res;
   try {
-    const user = await getUserDoc(auth.uid);
+    let user = null;
+    try {
+      user = await getUserDoc(auth.uid);
+    } catch {
+      user = null;
+    }
     if (!user) {
-      return NextResponse.json({ error: "Account not found — please sign in again." }, { status: 404 });
+      return NextResponse.json({
+        user: { uid: auth.uid, name: auth.name || auth.email.split("@")[0], email: auth.email, role: auth.role, createdAt: new Date().toISOString() },
+      });
     }
     return NextResponse.json({
       user: { uid: auth.uid, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
     });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message || "Server error" }, { status: 500 });
+    return NextResponse.json({
+      user: { uid: auth.uid, name: auth.name || auth.email.split("@")[0], email: auth.email, role: auth.role, createdAt: new Date().toISOString() },
+    });
   }
 }
