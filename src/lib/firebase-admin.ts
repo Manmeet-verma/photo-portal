@@ -1,4 +1,3 @@
-import "server-only";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, Timestamp, type Firestore } from "firebase-admin/firestore";
