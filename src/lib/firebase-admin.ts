@@ -40,6 +40,20 @@ export function isFirebaseAdminConfigured(): boolean {
   );
 }
 
+function formatPrivateKey(key: string): string {
+  let k = key.trim();
+  if (k.startsWith('"') && k.endsWith('"')) k = k.slice(1, -1);
+  k = k.replace(/\\r\\n/g, "\n").replace(/\\r/g, "\n").replace(/\\n/g, "\n");
+  k = k.replace(/\s+/, " ");
+  const lines = k.split(/\n/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length === 1 && !k.includes("BEGIN")) {
+    const raw = lines[0];
+    const parts = raw.split(/(?=-----)/);
+    if (parts.length >= 2) k = parts.join("\n");
+  }
+  return k;
+}
+
 function init() {
   if (!isFirebaseAdminConfigured()) {
     throw new Error(
@@ -48,11 +62,13 @@ function init() {
   }
   const sa = loadServiceAccount();
   if (!getApps().length) {
+    const rawKey = process.env.FIREBASE_PRIVATE_KEY || sa.privateKey || "";
+    const privateKey = formatPrivateKey(rawKey);
     initializeApp({
       credential: cert({
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL || sa.clientEmail || "",
-        privateKey: (process.env.FIREBASE_PRIVATE_KEY || sa.privateKey || "").replace(/\\n/g, "\n"),
+        privateKey,
       }),
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     });
