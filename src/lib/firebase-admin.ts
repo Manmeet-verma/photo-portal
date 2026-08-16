@@ -43,7 +43,6 @@ function formatPrivateKey(key: string): string {
   let k = key.trim();
   if (k.startsWith('"') && k.endsWith('"')) k = k.slice(1, -1);
   k = k.replace(/\\r\\n/g, "\n").replace(/\\r/g, "\n").replace(/\\n/g, "\n");
-  k = k.replace(/\s+/, " ");
   const lines = k.split(/\n/).map((l) => l.trim()).filter(Boolean);
   if (lines.length === 1 && !k.includes("BEGIN")) {
     const raw = lines[0];
