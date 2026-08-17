@@ -8,7 +8,6 @@ import { toast, esc } from "@/lib/ui";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
 } from "firebase/auth";
 import { isFirebaseConfigured } from "@/lib/config";
 
@@ -43,22 +42,10 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (!isFirebaseConfigured) return;
-    const { auth } = initFirebaseClient();
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      if (!u) return;
-      try {
-        const token = await u.getIdToken();
-        const res = await fetch("/api/me", { headers: { Authorization: `Bearer ${token}` } });
-        if (res.ok) {
-          const data = await parseJson(res);
-          window.location.href = data.user.role === "admin" ? "/admin.html" : "/account.html";
-        } else {
-          auth.signOut();
-        }
-      } catch {}
-    });
-    return unsub;
+    const user = currentUser();
+    if (user) {
+      window.location.href = user.role === "admin" ? "/admin.html" : "/account.html";
+    }
   }, []);
 
   async function authenticate(creds: { email: string; password: string; name?: string }) {

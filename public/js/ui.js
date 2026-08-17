@@ -134,6 +134,6 @@ function ensureNav() {
   root.innerHTML = u
     ? `<a class="btn btn-primary btn-sm" href="${u.role === 'admin' ? '/admin.html' : '/account.html'}">My Dashboard →</a>
        <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>`
-    : `<a class="btn btn-ghost btn-sm" href="/login.html">Sign in</a>
-       <a class="btn btn-primary btn-sm" href="/login.html?tab=register">Get started free</a>`;
+    : `<a class="btn btn-ghost btn-sm" href="/login">Sign in</a>
+       <a class="btn btn-primary btn-sm" href="/login?tab=register">Get started free</a>`;
 }

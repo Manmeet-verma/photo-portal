@@ -1,7 +1,7 @@
 /* ================= LensLink — Photographer Studio Panel ================= */
 (function () {
   const user = currentUser();
-  if (!user) { location.href = '/login.html'; return; }
+  if (!user) { location.href = '/login'; return; }
   if (user.role !== 'admin') { location.href = '/account.html'; return; }
 
   const side = document.getElementById('app-side');

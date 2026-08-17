@@ -305,10 +305,6 @@ export default function LandingPage() {
               Built for events. Engage with your clients by sharing photos via AI face recognition — create
               branded galleries, deliver via WhatsApp, and sell photos automatically. No apps. No waiting.
             </p>
-            <div className="flex items-center gap-3 mt-5 anim-fade-up" style={{ animationDelay: ".24s" }}>
-              <span style={{ fontSize: 14.5, fontWeight: 700, color: "var(--muted)" }}>Built for</span>
-              <span className="rot-line"><b>Weddings</b><b>Sports Days</b><b>Music Festivals</b><b>Corporate Events</b><b>Schools &amp; Graduations</b></span>
-            </div>
             <div className="flex gap-4 mt-8 flex-wrap anim-fade-up" style={{ animationDelay: ".3s" }}>
               <Link href="/login?tab=register" className="btn btn-primary btn-lg btn-magnetic btn-pulse">Start Free Trial</Link>
               <span className="btn btn-ghost btn-lg btn-magnetic" style={{ cursor: "default" }}>No Credit Card Required</span>
